@@ -172,46 +172,60 @@ $(function() {
         let input = $('#inputMessage').val();
         //nickcolor 'command'
         if (input.startsWith("/nickcolor ")) {
-            var newColor = input.split(' ')[1];
-            socket.emit('update color', newColor, function(responseData) {
-                //success response, log to user operation was completed
-               if (responseData === true) {
-                   var message = "Nickname color successfully updated to #" + newColor + ".";
-                   document.cookie = "wwcusercolor=#" + newColor;
-                   log(message);
-               }
-               //nickcolor change failed
-               else {
-                   var message = "Uh-oh. Value #" + newColor + " is not a valid color value. Example: /nickcolor #ffffff";
-                   log(message);
-               }
-            });
-        }
-        //nickname 'command'
-        else if (input.startsWith("/nick ")) {
-            var newNick = input.split(' ')[1];
-            //username limit at 26 chars for presentation purposes
-            if (newNick.length <= 26) {
-                socket.emit('update name', newNick, function(responseData) {
+            if (input.split(' ').length === 1) {
+                var newColor = input.split(' ')[1];
+                socket.emit('update color', newColor, function(responseData) {
                     //success response, log to user operation was completed
                     if (responseData === true) {
-                        var message = "Your username has been successfully changed to " + newNick + ".";
-                        $('#userHeader').text("You are user " + newNick + ".");
-                        document.cookie = "wwcusername=" + newNick;
+                        var message = "Nickname color successfully updated to #" + newColor + ".";
+                        document.cookie = "wwcusercolor=#" + newColor;
                         log(message);
                     }
-                    //nickname change failed
+                    //nickcolor change failed
                     else {
-                        var message = "Unable to update username, '" + newNick + "' is currently in use.";
+                        var message = "Uh-oh. Value #" + newColor + " is not a valid color value. Example: /nickcolor #ffffff";
                         log(message);
                     }
                 });
             }
-            //nickname too long
             else {
-                var message = "Unable to update username. Maximum nickname length is 26 characters.";
-                log(message);
+                var message = "Unable to update nickcolor. Invalid argument count. Example: /nickcolor #ffffff";
+                log (message);
             }
+
+        }
+        //nickname 'command'
+        else if (input.startsWith("/nick ")) {
+            if (input.split(' ').length === 1) {
+                var newNick = input.split(' ')[1];
+                //username limit at 26 chars for presentation purposes
+                if (newNick.length <= 26) {
+                    socket.emit('update name', newNick, function(responseData) {
+                        //success response, log to user operation was completed
+                        if (responseData === true) {
+                            var message = "Your username has been successfully changed to " + newNick + ".";
+                            $('#userHeader').text("You are user " + newNick + ".");
+                            document.cookie = "wwcusername=" + newNick;
+                            log(message);
+                        }
+                        //nickname change failed
+                        else {
+                            var message = "Unable to update username, '" + newNick + "' is currently in use.";
+                            log(message);
+                        }
+                    });
+                }
+                //nickname too long
+                else {
+                    var message = "Unable to update username. Maximum nickname length is 26 characters.";
+                    log(message);
+                }
+            }
+            else {
+                var message = "Unable to update nickname. Invalid argument count. Example: /nick myNewNickname";
+                log (message);
+            }
+
 
         }
         //must be regular message, send
